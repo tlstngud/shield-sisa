@@ -99,7 +99,7 @@ public:
         gemm_init_attributes();
         if (!std::is_same<T, float>::value) {
             fused_init_attributes();
-            // Fusion is bitwise neutral, so it is a pure speed choice: measured (docs/PERFORMANCE.md) to win only for the
+            // Fusion is bitwise neutral, so it is a pure speed choice: measured (reports/gpu_model.md) to win only for the
             // stride-2 blocks with a single <=128-channel chunk and a thin input (features 2 and 4); elsewhere the halo
             // recompute and small tiles lose against GEMM + depthwise.  Test hooks: SHV_CUDA_NO_FUSE=1,
             // SHV_CUDA_FUSE_MASK=<bits> (bit i fuses features[i+1]).

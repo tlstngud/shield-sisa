@@ -8,7 +8,7 @@
 #include <string>
 
 namespace shv {
-// Copied from engine/audio/sha256.hpp (namespace renamed). SHA-256 binds a quality certificate to the actual exported bytes. It is
+// Copied from ../shield_fast/engine/sha256.hpp (namespace renamed). SHA-256 binds a quality certificate to the actual exported bytes. It is
 // computed once at model load, never in an inference or participant hot path.
 inline std::string sha256_stream(std::istream& file) {
     const uint32_t k[64]={

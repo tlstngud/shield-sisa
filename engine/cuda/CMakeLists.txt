@@ -1,5 +1,5 @@
 # SHIELD-V CUDA engine: build/cuda/libshield_v_cuda.so (+ experimental variant and bench tools).
-#   ../../build.sh (CUDA 12+/13 nvcc, CUDA_ARCH default 86, Release)
+#   bash scratch/gpu_model/build.sh      (configures with CUDA 13.0 nvcc, sm_86, Ninja, Release)
 cmake_minimum_required(VERSION 3.24)
 project(shield_v_cuda LANGUAGES CXX CUDA)
 set(CMAKE_CXX_STANDARD 17)
