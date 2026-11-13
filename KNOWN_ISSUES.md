@@ -31,7 +31,7 @@ The certificate mismatch below was fixed in a later commit. Builds of the first 
 
 - **The CUDA toolkit is required to build the service.** `libshield_av` links `libshield_v_cuda` even for CPU-only use. The CUDA runtime is linked statically, so no GPU or driver is needed at run time.
 - **x86-64 only.** The CPU engines use AVX2/AVX-512 runtime dispatch. ARM (for example AWS Graviton) is not supported.
-- **Compression sensitivity (video).** Real videos re-encoded like a low WebRTC simulcast layer score markedly higher. Use the highest available layer (720p, ≥1.5 Mbps) for analysis, and see the README deployment notes.
+- **Compression sensitivity (video).** Real videos re-encoded like a low WebRTC simulcast layer score markedly higher. Use the highest available layer (720p, ≥1.5 Mbps) for analysis.
 - **Capacity on 16 CPU threads.** 512 participants with both modalities did not meet the 2 s deadline. Video alone passes at 512.
 - **Host memory is about 50 MB per participant.** The frame store holds one 10 s window at the 1280×720 canvas.
 - **No face.** Without any detected face, the whole frame is used, as the reference does. There is no separate `no_face` status yet.
