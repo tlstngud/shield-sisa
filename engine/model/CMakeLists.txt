@@ -1,0 +1,35 @@
+cmake_minimum_required(VERSION 3.16)
+project(shield_v_cpu LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+find_package(Threads REQUIRED)
+option(SHV_CPU_EXPERIMENTAL "Export shv_cpu_load_experimental (uncertified modes, offline certification only)" OFF)
+
+set(SHV_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+# Baseline ISA is portable x86-64.  Only the isa_<level>.cpp files get ISA flags; they are called after a runtime
+# CPU check.  Never -march=native.  -ffp-contract=off: no implicit FMA contraction (FMAs are explicit), so every
+# dispatch level performs the same IEEE operations.
+set(SHV_COMMON -O3 -ffp-contract=off -fno-math-errno -fno-plt -Wall -Wextra)
+add_library(shield_v_cpu SHARED runtime.cpp isa_avx512.cpp isa_avx2.cpp isa_scalar.cpp)
+target_include_directories(shield_v_cpu PUBLIC ${SHV_ROOT}/engine/include)
+target_compile_options(shield_v_cpu PRIVATE ${SHV_COMMON})
+set_source_files_properties(isa_avx512.cpp PROPERTIES COMPILE_OPTIONS
+  "-mavx512f;-mavx512bw;-mavx512dq;-mavx512vl;-mavx512bf16;-mavx512vnni;-mavx2;-mfma;-mbmi2;-mf16c")
+set_source_files_properties(isa_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mbmi2;-mf16c")
+if(SHV_CPU_EXPERIMENTAL)
+  target_compile_definitions(shield_v_cpu PRIVATE SHV_CPU_EXPERIMENTAL=1)
+endif()
+option(SHV_CPU_PROFILE "Per-stage timers (profiling builds only)" OFF)
+if(SHV_CPU_PROFILE)
+  target_compile_definitions(shield_v_cpu PRIVATE SHV_CPU_PROFILE=1)
+endif()
+set_target_properties(shield_v_cpu PROPERTIES CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN ON)
+target_link_libraries(shield_v_cpu PRIVATE Threads::Threads m)
+target_link_options(shield_v_cpu PRIVATE -Wl,--no-undefined -Wl,-z,now)
+
+add_executable(cpu_bench ${SHV_ROOT}/bench/cpu_bench.cpp)
+target_compile_options(cpu_bench PRIVATE -O2 -Wall)
+target_link_libraries(cpu_bench PRIVATE shield_v_cpu Threads::Threads)

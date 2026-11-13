@@ -1,0 +1,17 @@
+# Writes the compute revision header: hash of every source that affects numerics (certificates bind to it).
+#   cmake -DOUT=<header> -DSRCS="<a>;<b>;..." -P gen_revision.cmake
+set(acc "")
+foreach(f IN LISTS SRCS)
+  file(SHA256 "${f}" h)
+  string(APPEND acc "${h}")
+endforeach()
+string(SHA256 rev "${acc}")
+string(SUBSTRING "${rev}" 0 16 rev16)
+set(content "#pragma once\n#define SHV_CUDA_REVISION \"cuda-${rev16}\"\n")
+set(old "")
+if(EXISTS "${OUT}")
+  file(READ "${OUT}" old)
+endif()
+if(NOT "${old}" STREQUAL "${content}")
+  file(WRITE "${OUT}" "${content}")
+endif()

@@ -1,0 +1,11 @@
+build/
+data/
+__pycache__/
+*.pyc
+*.weights
+*.weights.json
+*.cert
+*.pt
+*.npz
+*.npy
+bench/artifacts/
